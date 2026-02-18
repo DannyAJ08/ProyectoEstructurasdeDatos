@@ -12,7 +12,7 @@ public class ListaProductos {
 
     //metodos/constructor
 
-    public void ListaProductos(NodoProducto primero){
+    public ListaProductos(){
         this.primero = null;
     }
 

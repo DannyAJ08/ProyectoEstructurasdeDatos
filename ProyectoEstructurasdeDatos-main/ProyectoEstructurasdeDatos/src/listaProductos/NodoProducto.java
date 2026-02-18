@@ -9,7 +9,7 @@ public class NodoProducto {
     private String id;
     private double precio;
     private int cantidad;
-    private ArrayList<String> listaImagenes;
+    private ArrayList<String> listaImagenes; // Lista para guardar las imágenes de cada libro
     private NodoProducto siguiente;
     
     // Constructor
@@ -20,7 +20,7 @@ public class NodoProducto {
         this.id = id;
         this.precio = precio;
         this.cantidad = cantidad;
-        this.listaImagenes = new ArrayList<>(); // Lista para guardar las imágenes de cada libro
+        this.listaImagenes = listaImagenes; 
         this.siguiente = null;
     }
     
