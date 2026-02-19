@@ -8,7 +8,7 @@ public class ListaProductos {
 
     //atributos
 
-    private  NodoProducto primero;
+    private NodoProducto primero;
 
     //metodos/constructor
 
@@ -66,18 +66,18 @@ public class ListaProductos {
         }
 
         NodoProducto temp = primero;
-        while (temp != null && !temp.getId().equals(id)){
+        while (temp != null && !temp.getId().equalsIgnoreCase(id)){
             temp = temp.getSiguiente();
         }
 
         if (temp == null){
-            System.out.println("No se encontró ningun libro con la ID: "+ id);
+            System.out.println("No se encontró ningun libro con la ID: " + id);
             return temp;
         }else{
-            System.out.println("El Libro si se encontro");
-            return temp;
+            System.out.println("Libro encontrado:");
+            System.out.println(temp);
         }
-
+        return temp;
     }
 
     public void mostrarLista(){
@@ -100,11 +100,18 @@ public class ListaProductos {
             System.out.println("La lista esta vacia");
             return null;
         }
+        
+        if (primero.getId().equalsIgnoreCase(id)) {
+        NodoProducto eliminado = primero;
+        primero = primero.getSiguiente(); // El segundo pasa a ser primero
+        System.out.println("El libro se eliminó correctamente");
+        return eliminado;
+    }
 
         NodoProducto temp = primero;
         NodoProducto anteriorTemp = temp;
 
-        while (temp != null && !temp.getId().equals(id)){
+        while (temp != null && !temp.getId().equalsIgnoreCase(id)){
             anteriorTemp = temp;
             temp = temp.getSiguiente();
         }
@@ -112,34 +119,46 @@ public class ListaProductos {
         if (temp == null){
             System.out.println("EL id del libro no se encontró");
         }else{
-            System.out.println("El nombre se encontro");
+            System.out.println("El libro se eliminó correctamente");
             anteriorTemp.setSiguiente(temp.getSiguiente());
         }
         return temp;
 
 
     }
+    public void modificarNombre(String id, String nuevoNombre){
 
-    public void modificar(String nuevoNombre, String nuevaCategoria, String id, double nuevoPrecio, int nuevaCantidad){
-        if (estaVacia()) {
-            System.out.println("La lista esta vacia");
-            return;
-        }
+    NodoProducto temp = buscar(id);  // de esta forma reutilizamos el metodo buscar
 
-        NodoProducto temp = primero;
-        while (temp != null && !temp.getId().equals(id)){
-            temp = temp.getSiguiente();
-        }
-
-        if (temp==null){
-            System.out.println("No se encontro ningun libro con esa id");
-        }else{
-            temp.setCantidad(nuevaCantidad);
+        if (temp != null){
             temp.setNombre(nuevoNombre);
-            temp.setCategoria(nuevaCategoria);
-            temp.setPrecio(nuevoPrecio);
-            
         }
+    }
+    
+    public void modificarCategoria(String id, String nuevaCategoria){
 
+    NodoProducto temp = buscar(id);
+
+        if (temp != null){
+            temp.setCategoria(nuevaCategoria);
+        }
+    }
+    
+    public void modificarPrecio(String id, double nuevoPrecio){
+
+    NodoProducto temp = buscar(id);
+
+        if (temp != null){
+            temp.setPrecio(nuevoPrecio);
+        }
+    }
+    
+    public void modificarCantidad(String id, int nuevaCantidad){
+
+    NodoProducto temp = buscar(id); 
+
+        if (temp != null){
+            temp.setCantidad(nuevaCantidad);
+        }
     }
 }
