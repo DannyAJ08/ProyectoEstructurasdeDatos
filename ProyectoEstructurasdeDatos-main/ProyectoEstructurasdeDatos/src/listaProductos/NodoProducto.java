@@ -10,7 +10,9 @@ public class NodoProducto {
     private double precio;
     private int cantidad;
     private ArrayList<String> listaImagenes; // Lista para guardar las imágenes de cada libro
-    private NodoProducto siguiente;
+    private NodoProducto siguiente; // Lista enlazada
+    private NodoProducto izquierdo; // Árbol binario
+    private NodoProducto derecho; // Árbol binario
     
     // Constructor
 
@@ -22,6 +24,8 @@ public class NodoProducto {
         this.cantidad = cantidad;
         this.listaImagenes = listaImagenes; 
         this.siguiente = null;
+        this.izquierdo = null;
+        this.derecho = null;
     }
     
     // Getters
@@ -53,6 +57,15 @@ public class NodoProducto {
     public NodoProducto getSiguiente() {
         return siguiente;
     }
+
+    public NodoProducto getIzquierdo() {
+        return izquierdo;
+    }
+
+    public NodoProducto getDerecho() {
+        return derecho;
+    }
+    
     
     // Setters
 
@@ -79,6 +92,15 @@ public class NodoProducto {
     public void setSiguiente(NodoProducto siguiente) {
         this.siguiente = siguiente;
     }
+
+    public void setIzquierdo(NodoProducto izquierdo) {
+        this.izquierdo = izquierdo;
+    }
+
+    public void setDerecho(NodoProducto derecho) {
+        this.derecho = derecho;
+    }
+    
     
     // Métodos
     public void agregarImagen(String imagen){
