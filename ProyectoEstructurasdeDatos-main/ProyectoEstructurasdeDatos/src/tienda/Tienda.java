@@ -93,7 +93,7 @@ public class Tienda {
 
     public Cliente atenderSiguienteCliente() {
         if (colaClientes.estaVacia()) {
-            System.out.println("No hay clientes en la cola para atender");
+            System.out.println("No hay clientes en la cola para atender\n");
             return null;
         }
 
@@ -108,33 +108,19 @@ public class Tienda {
         return clienteAtendido;
     }
 
-    public void mostrarColaClientes() {
+    public void mostrarClienteFrente() {
         if (colaClientes.estaVacia()) {
             System.out.println("No hay clientes en espera");
             return;
         }
 
         System.out.println("===== COLA DE CLIENTES =====");
-        Cliente temp = colaClientes.verFrente();
-        int posicion = 1;
-
-        while (temp != null) {
-            String prioridadTexto;
-            if (temp.getPrioridad() == 1) {
-                prioridadTexto = "Básico";
-            } else if (temp.getPrioridad() == 2) {
-                prioridadTexto = "Afiliado";
-            } else {
-                prioridadTexto = "Premium";
-            }
-
-            System.out.println(posicion + ". " + temp.getNombre() + " (ID: " + temp.getIdCliente() +
-                    ", Prioridad: " + prioridadTexto + ", Productos en carrito: " +
-                    contarProductosEnCarrito(temp) + ")");
-            temp = temp.getSiguiente();
-            posicion++;
-        }
-        System.out.println("===========================");
+        Cliente clienteRegistro = colaClientes.verFrente();
+        
+        
+        System.out.println("Nombre: " + clienteRegistro.getNombre() + "(ID: " + clienteRegistro.getIdCliente() +
+                    "Prioridad: " + colaClientes.prioridadTexto(clienteRegistro.getPrioridad()) + "Productos en carrito: " +
+                    contarProductosEnCarrito(clienteRegistro) + ")");
     }
 
     private int contarProductosEnCarrito(Cliente cliente) {
