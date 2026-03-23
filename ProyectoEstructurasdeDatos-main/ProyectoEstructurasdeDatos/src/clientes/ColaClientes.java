@@ -59,8 +59,7 @@ public class ColaClientes {
             frente = nuevoCliente;
             return;
         }
-        // jose 3
-        //carlos 2 ingresando
+        
         // Caso 3: buscar posición correcta
         Cliente temp = frente;
         
@@ -88,5 +87,18 @@ public class ColaClientes {
             temp = temp.getSiguiente();
         }
         return null; // no existe
+    }
+    
+    // Método para cambiar prioridad numérica a String
+    public String prioridadTexto(int prioridad){
+        String prioridadTexto;
+        if(prioridad == 1){
+            prioridadTexto = "Básico";
+        } else if (prioridad == 2){
+            prioridadTexto = "Afiliado";
+        } else {
+            prioridadTexto = "Premium";
+        }
+    return prioridadTexto;
     }
 }
