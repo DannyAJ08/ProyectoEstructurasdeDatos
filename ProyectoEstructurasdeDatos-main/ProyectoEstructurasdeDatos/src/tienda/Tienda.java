@@ -2,25 +2,34 @@ package tienda;
 
 import clientes.ColaClientes;
 import clientes.Cliente;
+import grafo.Grafo;
+import grafo.ResultadoDijkstra;
 import listaProductos.NodoProducto;
 
 public class Tienda {
 
-    // Atributos
+
     private String nombre;
     private String direccion;
     private ArbolProductos inventario;
     private ColaClientes colaClientes;
 
-    // Constructor
+
+    private String ubicacion;
+    private Grafo grafo;
+
+
     public Tienda(String nombre, String direccion) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.inventario = new ArbolProductos();
         this.colaClientes = new ColaClientes();
+        this.ubicacion = "Tienda Central";
+        this.grafo = new Grafo();
+        inicializarMapaBase();
     }
 
-    // Getters
+
     public String getNombre() {
         return nombre;
     }
@@ -37,7 +46,14 @@ public class Tienda {
         return colaClientes;
     }
 
-    // Setters
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public Grafo getGrafo() {
+        return grafo;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -46,7 +62,62 @@ public class Tienda {
         this.direccion = direccion;
     }
 
-    // Métodos para gestión de inventario
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+
+
+    public void agregarVertice(String nombre) {
+        grafo.agregarVertice(nombre);
+    }
+
+
+    public void agregarArista(String origen, String destino, int peso) {
+        grafo.agregarArista(origen, destino, peso);
+    }
+
+
+    public void mostrarMapa() {
+        grafo.mostrarMapa();
+    }
+
+
+    public boolean hayConexionConTienda(String ubicacionCliente) {
+        return grafo.estaConectado(this.ubicacion, ubicacionCliente);
+    }
+
+
+    public ResultadoDijkstra caminoMasCorto(String ubicacionDestino) {
+        return grafo.caminoMasCorto(this.ubicacion, ubicacionDestino);
+    }
+
+
+    private void inicializarMapaBase() {
+        System.out.println("Inicializando mapa base de entregas...");
+
+
+        grafo.agregarVertice("Tienda Central");
+        grafo.agregarVertice("San José");
+        grafo.agregarVertice("Cartago");
+        grafo.agregarVertice("Heredia");
+        grafo.agregarVertice("Alajuela");
+        grafo.agregarVertice("Tres Ríos");
+        grafo.agregarVertice("Grecia");
+
+
+        grafo.agregarArista("Tienda Central", "San José", 5);
+        grafo.agregarArista("San José", "Cartago", 20);
+        grafo.agregarArista("San José", "Heredia", 12);
+        grafo.agregarArista("San José", "Alajuela", 18);
+        grafo.agregarArista("Heredia", "Alajuela", 8);
+        grafo.agregarArista("Cartago", "Tres Ríos", 7);
+        grafo.agregarArista("Alajuela", "Grecia", 25);
+
+        System.out.println("Mapa base cargado correctamente\n");
+    }
+
+
     public void agregarProducto(NodoProducto producto) {
         if (producto == null) {
             System.out.println("Error: Producto nulo no puede ser agregado");
@@ -60,7 +131,7 @@ public class Tienda {
     }
 
     public void mostrarInventario() {
-        System.out.println("===== TIENDA: " + nombre + " =====");
+        System.out.println(" TIENDA: " + nombre );
         System.out.println("Dirección: " + direccion);
         inventario.mostrarInorden();
     }
@@ -74,20 +145,16 @@ public class Tienda {
         return inventario.actualizarCantidad(id, nuevaCantidad);
     }
 
-    // Métodos para gestión de clientes
     public void agregarCliente(Cliente cliente) {
         if (cliente == null) {
             System.out.println("Error: Cliente nulo no puede ser agregado");
             return;
         }
-
-        // Validar prioridad (1, 2 o 3)
         int prioridad = cliente.getPrioridad();
         if (prioridad < 1 || prioridad > 3) {
             System.out.println("Error: Prioridad inválida. Debe ser 1 (Básico), 2 (Afiliado) o 3 (Premium)");
             return;
         }
-
         colaClientes.encolar(cliente);
     }
 
@@ -100,7 +167,7 @@ public class Tienda {
         Cliente clienteAtendido = colaClientes.desencolar();
 
         if (clienteAtendido != null) {
-            System.out.println("\n===== ATENDIENDO CLIENTE =====");
+            System.out.println("\n ATENDIENDO CLIENTE ");
             System.out.println(clienteAtendido);
             System.out.println("==============================\n");
         }
@@ -116,18 +183,17 @@ public class Tienda {
 
         System.out.println("===== COLA DE CLIENTES =====");
         Cliente clienteRegistro = colaClientes.verFrente();
-        
-        
-        System.out.println("Nombre: " + clienteRegistro.getNombre() + "(ID: " + clienteRegistro.getIdCliente() +
-                    "Prioridad: " + colaClientes.prioridadTexto(clienteRegistro.getPrioridad()) + "Productos en carrito: " +
-                    contarProductosEnCarrito(clienteRegistro) + ")");
+
+        System.out.println("Nombre: " + clienteRegistro.getNombre() +
+                " (ID: " + clienteRegistro.getIdCliente() + " | " +
+                "Prioridad: " + colaClientes.prioridadTexto(clienteRegistro.getPrioridad()) +
+                " | Productos en carrito: " + contarProductosEnCarrito(clienteRegistro) + ")");
     }
 
     private int contarProductosEnCarrito(Cliente cliente) {
         if (cliente.getCarrito() == null || cliente.getCarrito().estaVacia()) {
             return 0;
         }
-
         int contador = 0;
         listaProductos.NodoProducto actual = cliente.getCarrito().getPrimero();
         while (actual != null) {
@@ -145,7 +211,8 @@ public class Tienda {
         return colaClientes.estaVacia();
     }
 
-    // Método para generar factura de un cliente
+
+
     public void generarFactura(Cliente cliente) {
         if (cliente == null) {
             System.out.println("Error: Cliente inválido");
@@ -193,13 +260,12 @@ public class Tienda {
             System.out.println("------------------------");
             System.out.println("TOTAL: ₡" + total);
 
-            // Aplicar descuentos según prioridad
             double descuento = 0;
             if (cliente.getPrioridad() == 2) {
-                descuento = total * 0.05; // 5% descuento para afiliados
+                descuento = total * 0.05;
                 System.out.println("Descuento afiliado (5%): -₡" + descuento);
             } else if (cliente.getPrioridad() == 3) {
-                descuento = total * 0.10; // 10% descuento para premium
+                descuento = total * 0.10;
                 System.out.println("Descuento premium (10%): -₡" + descuento);
             }
 
@@ -210,11 +276,10 @@ public class Tienda {
 
         System.out.println("===== FIN FACTURA =====\n");
     }
-
-    @Override
     public String toString() {
         return "Tienda: " + nombre + "\n" +
                 "Dirección: " + direccion + "\n" +
+                "Ubicación en mapa: " + ubicacion + "\n" +
                 "Productos en inventario: " + inventario.contarProductos() + "\n" +
                 "Clientes en cola: " + (colaClientes.estaVacia() ? 0 : contarClientesEnCola());
     }
