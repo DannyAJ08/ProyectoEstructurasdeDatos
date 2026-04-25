@@ -3,6 +3,7 @@ package proyectoestructurasdedatos;
 import listaProductos.NodoProducto;
 import clientes.Cliente;
 import tienda.Tienda;
+import grafo.ResultadoDijkstra;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -25,6 +26,9 @@ public class ProyectoEstructurasdeDatos {
                                 "3. Agregar cliente a la cola y comprar productos\n" +
                                 "4. Ver cliente al frente\n" +
                                 "5. Atender siguiente cliente\n" +
+                                "6. Agregar ubicación al mapa\n" +
+                                "7. Agregar conexión entre ubicaciones\n" +
+                                "8. Mostrar mapa de entregas\n" +
                                 "0. Salir\n");
 
             System.out.print("Seleccione una opción: \n");
@@ -106,8 +110,14 @@ public class ProyectoEstructurasdeDatos {
                     int prioridad = sc.nextInt();
                     sc.nextLine();
                     
+                    System.out.print("Ubicación del cliente: ");
+                    String ubicacion = sc.nextLine();
+                    
                     // Crear el cliente
-                    Cliente cliente = new Cliente(nombreCliente, idCliente, prioridad);
+                    Cliente cliente = new Cliente(nombreCliente, idCliente, prioridad, ubicacion);
+                    
+                    // Agregar ubicación al grafo
+                    tienda.agregarVertice(ubicacion);
                     
                     // Llenar carrito
                     boolean agregarMas = true;
@@ -176,11 +186,64 @@ public class ProyectoEstructurasdeDatos {
                 
                 // Atender Cliente
                 case 5:
-                    Cliente atendido = tienda.atenderSiguienteCliente();
-                    
-                    if (atendido != null){
-                        tienda.generarFactura(atendido);
+                    Cliente clienteFrente = tienda.getColaClientes().verFrente();
+
+                    if (clienteFrente == null) {
+                        System.out.println("No hay clientes en la cola para atender.");
+                        break;
                     }
+
+                    if (!tienda.hayConexionConTienda(clienteFrente.getUbicacion())) {
+                        System.out.println("No se puede atender al cliente porque su ubicación está desconectada del mapa.");
+                        break;
+                    }
+
+                    Cliente atendido = tienda.atenderSiguienteCliente();
+
+                    if (atendido != null) {
+                        tienda.generarFactura(atendido);
+
+                        ResultadoDijkstra resultado = tienda.caminoMasCorto(atendido.getUbicacion());
+                        if (resultado == null) {
+                            System.out.println("No se pudo calcular la ruta de entrega.");
+                            break;
+                        }
+
+                        System.out.println("===== RUTA DE ENTREGA =====");
+                        System.out.println("Origen: " + tienda.getUbicacion());
+                        System.out.println("Destino: " + atendido.getUbicacion());
+                        System.out.println("Camino más corto: " + resultado.getCamino());
+                        System.out.println("Distancia total: " + resultado.getDistanciaTotal() + " km");
+                        System.out.println("===========================\n");
+                    }
+                    break;
+                
+                // Agregar nueva ubicación (vértice) al mapa
+                case 6:
+                    System.out.print("Ingrese el nombre de la nueva ubicación: ");
+                    String nuevaUbicacion = sc.nextLine();
+
+                    tienda.agregarVertice(nuevaUbicacion);
+                    break;
+                    
+                // Crear conexión (arista) entre dos ubicaciones
+                case 7:
+                    System.out.print("Ubicación de origen: ");
+                    String origen = sc.nextLine();
+
+                    System.out.print("Ubicación de destino: ");
+                    String destino = sc.nextLine();
+
+                    System.out.print("Distancia entre ubicaciones: ");
+                    int distancia = sc.nextInt();
+                    sc.nextLine();
+
+                    tienda.agregarArista(origen, destino, distancia);
+                    break;
+
+                // Mostrar todas las ubicaciones y conexiones del mapa
+                case 8:
+                    tienda.mostrarMapa();
                     break;
                 
                 // Salir del programa
