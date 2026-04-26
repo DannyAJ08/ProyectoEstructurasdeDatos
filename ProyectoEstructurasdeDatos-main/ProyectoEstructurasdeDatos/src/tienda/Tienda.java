@@ -66,32 +66,29 @@ public class Tienda {
         this.ubicacion = ubicacion;
     }
 
-
-
     public void agregarVertice(String nombre) {
         grafo.agregarVertice(nombre);
     }
-
 
     public void agregarArista(String origen, String destino, int peso) {
         grafo.agregarArista(origen, destino, peso);
     }
 
-
     public void mostrarMapa() {
         grafo.mostrarMapa();
     }
 
+    public String mostrarMapaTexto() {
+        return grafo.toString();
+    }
 
     public boolean hayConexionConTienda(String ubicacionCliente) {
         return grafo.estaConectado(this.ubicacion, ubicacionCliente);
     }
 
-
     public ResultadoDijkstra caminoMasCorto(String ubicacionDestino) {
         return grafo.caminoMasCorto(this.ubicacion, ubicacionDestino);
     }
-
 
     private void inicializarMapaBase() {
         System.out.println("Inicializando mapa base de entregas...");
@@ -117,7 +114,6 @@ public class Tienda {
         System.out.println("Mapa base cargado correctamente\n");
     }
 
-
     public void agregarProducto(NodoProducto producto) {
         if (producto == null) {
             System.out.println("Error: Producto nulo no puede ser agregado");
@@ -134,6 +130,14 @@ public class Tienda {
         System.out.println(" TIENDA: " + nombre );
         System.out.println("Dirección: " + direccion);
         inventario.mostrarInorden();
+    }
+    
+    public String mostrarInventarioTexto() {
+        String texto = "TIENDA: " + nombre + "\n";
+        texto += "Dirección: " + direccion + "\n";
+        texto += inventario.mostrarInordenTexto();
+
+        return texto;
     }
 
     public boolean eliminarProducto(String id) {
@@ -211,8 +215,6 @@ public class Tienda {
         return colaClientes.estaVacia();
     }
 
-
-
     public void generarFactura(Cliente cliente) {
         if (cliente == null) {
             System.out.println("Error: Cliente inválido");
@@ -276,6 +278,76 @@ public class Tienda {
 
         System.out.println("===== FIN FACTURA =====\n");
     }
+    
+    public String generarFacturaTexto(Cliente cliente) {
+        if (cliente == null) {
+            return "Error: Cliente inválido";
+        }
+
+        String factura = "";
+        factura += "===== FACTURA =====\n";
+        factura += "Tienda: " + nombre + "\n";
+        factura += "Dirección: " + direccion + "\n";
+        factura += "Fecha: " + java.time.LocalDate.now() + "\n";
+        factura += "------------------------\n";
+        factura += "Cliente: " + cliente.getNombre() + "\n";
+        factura += "ID Cliente: " + cliente.getIdCliente() + "\n";
+
+        String prioridadTexto;
+        if (cliente.getPrioridad() == 1) {
+            prioridadTexto = "Básico";
+        } else if (cliente.getPrioridad() == 2) {
+            prioridadTexto = "Afiliado";
+        } else {
+            prioridadTexto = "Premium";
+        }
+
+        factura += "Tipo: " + prioridadTexto + "\n";
+        factura += "------------------------\n";
+        factura += "PRODUCTOS:\n";
+
+        if (cliente.getCarrito() == null || cliente.getCarrito().estaVacia()) {
+            factura += "El carrito está vacío\n";
+        } else {
+            listaProductos.NodoProducto actual = cliente.getCarrito().getPrimero();
+            double total = 0;
+            int item = 1;
+
+            while (actual != null) {
+                double subtotal = actual.getPrecio() * actual.getCantidad();
+
+                factura += item + ". " + actual.getNombre()
+                        + " - ₡" + actual.getPrecio()
+                        + " x " + actual.getCantidad()
+                        + " = ₡" + subtotal + "\n";
+
+                total += subtotal;
+                actual = actual.getSiguiente();
+                item++;
+            }
+
+            factura += "------------------------\n";
+            factura += "TOTAL: ₡" + total + "\n";
+
+            double descuento = 0;
+            if (cliente.getPrioridad() == 2) {
+                descuento = total * 0.05;
+                factura += "Descuento afiliado (5%): -₡" + descuento + "\n";
+            } else if (cliente.getPrioridad() == 3) {
+                descuento = total * 0.10;
+                factura += "Descuento premium (10%): -₡" + descuento + "\n";
+            }
+
+            if (descuento > 0) {
+                factura += "TOTAL CON DESCUENTO: ₡" + (total - descuento) + "\n";
+            }
+        }
+
+        factura += "===== FIN FACTURA =====\n";
+
+        return factura;
+    }
+    
     public String toString() {
         return "Tienda: " + nombre + "\n" +
                 "Dirección: " + direccion + "\n" +

@@ -251,4 +251,24 @@ public class Grafo {
         if (resultado == null) return -1;
         return resultado.getDistanciaTotal();
     }
+    
+    @Override
+    public String toString() {
+        if (estaVacio()) {
+            return "El mapa está vacío";
+        }
+
+        String texto = "===== MAPA DE UBICACIONES =====\n";
+
+        Vertice temp = primero;
+
+        while (temp != null) {
+            texto += temp.toString() + "\n"; // usa el toString de Vertice
+            temp = temp.getSiguiente();
+        }
+
+        texto += "================================";
+
+        return texto;
+    }
 }

@@ -97,6 +97,31 @@ public class ArbolProductos {
             mostrarInordenRecursivo(actual.getDerecho());
         }
     }
+    
+    public String mostrarInordenTexto() {
+        if (estaVacio()) {
+            return "El inventario está vacío";
+        }
+
+        String texto = "===== INVENTARIO DE PRODUCTOS =====\n";
+        texto += mostrarInordenTextoRecursivo(raiz);
+        texto += "===================================\n";
+
+        return texto;
+    }
+
+    private String mostrarInordenTextoRecursivo(NodoProducto actual) {
+        if (actual == null) {
+            return "";
+        }
+
+        String texto = "";
+        texto += mostrarInordenTextoRecursivo(actual.getIzquierdo());
+        texto += actual.toString() + "\n";
+        texto += mostrarInordenTextoRecursivo(actual.getDerecho());
+
+        return texto;
+    }
 
     // Mostrar productos en preorden
     public void mostrarPreorden() {
